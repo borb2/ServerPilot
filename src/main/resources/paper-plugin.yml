@@ -1,0 +1,59 @@
+name: ServerPilot
+version: '${version}'
+main: com.serverpilot.ServerPilot
+api-version: '${apiVersion}'
+description: In-game control centre for server owners, admins and developers.
+folia-supported: true
+authors:
+  - ServerPilot
+website: https://github.com/borb2/ServerPilot
+
+permissions:
+  serverpilot.use:
+    description: Use /serverpilot and open the dashboard.
+    default: op
+  serverpilot.section.server:
+    description: Open the Server section.
+    default: op
+  serverpilot.section.players:
+    description: Open the Players section and inspect online players.
+    default: op
+  serverpilot.section.admintools:
+    description: Open the Admin Tools section.
+    default: op
+  serverpilot.section.devtools:
+    description: Open the Developer Tools section.
+    default: op
+  serverpilot.section.plugins:
+    description: Open the Plugins section and view plugin details.
+    default: op
+  serverpilot.section.integrations:
+    description: Open the Integrations section.
+    default: op
+  serverpilot.section.performance:
+    description: Open the Performance section.
+    default: op
+  serverpilot.section.settings:
+    description: Open the Settings section.
+    default: op
+  serverpilot.tool.debugwand:
+    description: Obtain and use the debug wand.
+    default: op
+  serverpilot.settings.reload:
+    description: Reload ServerPilot's configuration.
+    default: op
+  serverpilot.admin:
+    description: Full access to every ServerPilot feature.
+    default: op
+    children:
+      serverpilot.use: true
+      serverpilot.section.server: true
+      serverpilot.section.players: true
+      serverpilot.section.admintools: true
+      serverpilot.section.devtools: true
+      serverpilot.section.plugins: true
+      serverpilot.section.integrations: true
+      serverpilot.section.performance: true
+      serverpilot.section.settings: true
+      serverpilot.tool.debugwand: true
+      serverpilot.settings.reload: true

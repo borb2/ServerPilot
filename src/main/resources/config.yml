@@ -1,0 +1,25 @@
+messages:
+  # Show the ServerPilot prefix in front of chat messages.
+  show-prefix: true
+  # MiniMessage. The theme tags <primary> <accent> <success> <error> <warning>
+  # <text> <muted> <faint> are available anywhere ServerPilot parses MiniMessage.
+  prefix: "<primary>ServerPilot <faint>»<reset> "
+
+ui:
+  # Small interface sounds on navigation, errors and confirmations.
+  sounds: true
+  # Fill unused menu slots with a neutral pane instead of leaving them empty.
+  fill-empty-slots: true
+
+debug-wand:
+  enabled: true
+  # Any valid item material. Falls back to BLAZE_ROD when invalid.
+  material: BLAZE_ROD
+
+integrations:
+  # Detect and enable adapters for supported third-party plugins.
+  enabled: true
+
+logging:
+  # Extra detail in the server log, useful when diagnosing ServerPilot itself.
+  debug: false
