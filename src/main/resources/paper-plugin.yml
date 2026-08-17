@@ -8,6 +8,13 @@ authors:
   - ServerPilot
 website: https://github.com/borb2/ServerPilot
 
+dependencies:
+  server:
+    LuckPerms:
+      load: BEFORE
+      required: false
+      join-classpath: true
+
 permissions:
   serverpilot.use:
     description: Use /serverpilot and open the dashboard.
@@ -18,11 +25,8 @@ permissions:
   serverpilot.section.players:
     description: Open the Players section and inspect online players.
     default: op
-  serverpilot.section.admintools:
-    description: Open the Admin Tools section.
-    default: op
-  serverpilot.section.devtools:
-    description: Open the Developer Tools section.
+  serverpilot.section.tools:
+    description: Open the Tools section.
     default: op
   serverpilot.section.plugins:
     description: Open the Plugins section and view plugin details.
@@ -39,6 +43,9 @@ permissions:
   serverpilot.tool.debugwand:
     description: Obtain and use the debug wand.
     default: op
+  serverpilot.tool.testranks:
+    description: Spawn rank preview mannequins with /testranks.
+    default: op
   serverpilot.settings.reload:
     description: Reload ServerPilot's configuration.
     default: op
@@ -49,11 +56,11 @@ permissions:
       serverpilot.use: true
       serverpilot.section.server: true
       serverpilot.section.players: true
-      serverpilot.section.admintools: true
-      serverpilot.section.devtools: true
+      serverpilot.section.tools: true
       serverpilot.section.plugins: true
       serverpilot.section.integrations: true
       serverpilot.section.performance: true
       serverpilot.section.settings: true
       serverpilot.tool.debugwand: true
+      serverpilot.tool.testranks: true
       serverpilot.settings.reload: true

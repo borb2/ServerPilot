@@ -10,6 +10,8 @@ import org.slf4j.Logger;
 public final class ServerPilotConfig {
     private static final String DEFAULT_PREFIX = "<primary>ServerPilot <faint>»<reset> ";
     private static final Material DEFAULT_WAND_MATERIAL = Material.BLAZE_ROD;
+    private static final double DEFAULT_TEST_RANKS_SPACING = 2.0;
+    private static final double MIN_TEST_RANKS_SPACING = 1.0;
 
     private final JavaPlugin plugin;
     private final Logger log;
@@ -22,6 +24,7 @@ public final class ServerPilotConfig {
     private Material debugWandMaterial = DEFAULT_WAND_MATERIAL;
     private boolean integrationsEnabled = true;
     private boolean debugLogging;
+    private double testRanksSpacing = DEFAULT_TEST_RANKS_SPACING;
     public ServerPilotConfig(JavaPlugin plugin) {
         this.plugin = plugin;
         this.log = plugin.getSLF4JLogger();
@@ -39,6 +42,16 @@ public final class ServerPilotConfig {
         debugWandMaterial = validWandMaterial(config.getString("debug-wand.material"));
         integrationsEnabled = config.getBoolean("integrations.enabled", true);
         debugLogging = config.getBoolean("logging.debug", false);
+        testRanksSpacing = validSpacing(config.getDouble("test-ranks.spacing", DEFAULT_TEST_RANKS_SPACING));
+    }
+
+    private double validSpacing(double raw) {
+        if (raw < MIN_TEST_RANKS_SPACING) {
+            log.warn("test-ranks.spacing {} is below {}, using {}.", raw, MIN_TEST_RANKS_SPACING,
+                    MIN_TEST_RANKS_SPACING);
+            return MIN_TEST_RANKS_SPACING;
+        }
+        return raw;
     }
 
     private String validPrefix(String raw) {
@@ -96,5 +109,9 @@ public final class ServerPilotConfig {
 
     public boolean debugLogging() {
         return debugLogging;
+    }
+
+    public double testRanksSpacing() {
+        return testRanksSpacing;
     }
 }

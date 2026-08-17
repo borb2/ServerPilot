@@ -1,12 +1,14 @@
 package com.serverpilot;
 
 import com.serverpilot.command.ServerPilotCommand;
+import com.serverpilot.command.TestRanksCommand;
 import com.serverpilot.config.ServerPilotConfig;
 import com.serverpilot.integration.IntegrationManager;
 import com.serverpilot.message.Messenger;
 import com.serverpilot.performance.PerformanceService;
 import com.serverpilot.tool.DebugWand;
 import com.serverpilot.tool.DebugWandListener;
+import com.serverpilot.tool.RankMannequins;
 import com.serverpilot.ui.Menu;
 import com.serverpilot.ui.MenuListener;
 import com.serverpilot.ui.Services;
@@ -30,13 +32,18 @@ public final class ServerPilot extends JavaPlugin {
         PerformanceService performance = new PerformanceService(getServer());
         integrations = new IntegrationManager(this, config);
         DebugWand debugWand = new DebugWand(keys, config, messenger);
-        Services services = new Services(this, keys, config, messenger, sounds, performance, integrations, debugWand);
         integrations.enableAll();
+        RankMannequins rankMannequins = new RankMannequins(keys, config, messenger, integrations);
+        Services services = new Services(this, keys, config, messenger, sounds, performance, integrations,
+                debugWand, rankMannequins);
         getServer().getPluginManager().registerEvents(new MenuListener(), this);
         getServer().getPluginManager().registerEvents(new DebugWandListener(services), this);
+        getServer().getPluginManager().registerEvents(rankMannequins, this);
 
         registerCommand("serverpilot", "Open the ServerPilot dashboard", List.of("sp"),
                 new ServerPilotCommand(services));
+        registerCommand("testranks", "Spawn a mannequin for every LuckPerms rank",
+                new TestRanksCommand(services));
 
         getSLF4JLogger().info("ServerPilot {} enabled.", getPluginMeta().getVersion());
     }

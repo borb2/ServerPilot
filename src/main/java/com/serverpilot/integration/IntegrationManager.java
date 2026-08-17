@@ -22,7 +22,7 @@ public final class IntegrationManager {
 
     private static List<Integration> defaultRoster() {
         return List.of(
-                new PlannedIntegration("LuckPerms", "LuckPerms", "Inspect and edit permissions in-game"),
+                new LuckPermsIntegration(),
                 new PlannedIntegration("WorldEdit", "WorldEdit", "Read and drive the current selection"),
                 new PlannedIntegration("WorldGuard", "WorldGuard", "Browse and edit regions"),
                 new PlannedIntegration("PlaceholderAPI", "PlaceholderAPI", "Expose ServerPilot placeholders"),
@@ -91,6 +91,14 @@ public final class IntegrationManager {
 
     public IntegrationStatus status(Integration integration) {
         return statuses.getOrDefault(integration.pluginName(), IntegrationStatus.NOT_INSTALLED);
+    }
+
+    public <T extends Integration> Optional<T> active(Class<T> type) {
+        return roster.stream()
+                .filter(integration -> status(integration) == IntegrationStatus.ACTIVE)
+                .filter(type::isInstance)
+                .map(type::cast)
+                .findFirst();
     }
 
     public Optional<String> version(Integration integration) {

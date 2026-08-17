@@ -13,9 +13,9 @@ import org.bukkit.inventory.ItemStack;
 
 public final class DashboardMenu extends Menu {
 
-    private static final Section[] SECTIONS = {Section.PLUGINS, Section.INTEGRATIONS};
-    private static final int[] SLOTS = {12, 14};
-    private static final int SLOT_ABOUT = 22;
+    private static final Section[] SECTIONS = {Section.TOOLS, Section.PLUGINS, Section.INTEGRATIONS};
+    private static final int[] SLOTS = {13, 30, 32};
+    private static final int SLOT_ABOUT = 31;
 
     public DashboardMenu(Services services) {
         super(services, null);
@@ -28,7 +28,7 @@ public final class DashboardMenu extends Menu {
 
     @Override
     protected int size() {
-        return 27;
+        return 36;
     }
 
     @Override

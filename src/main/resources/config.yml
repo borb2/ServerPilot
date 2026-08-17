@@ -16,6 +16,10 @@ debug-wand:
   # Any valid item material. Falls back to BLAZE_ROD when invalid.
   material: BLAZE_ROD
 
+test-ranks:
+  # Blocks between rank mannequins.
+  spacing: 2.0
+
 integrations:
   # Detect and enable adapters for supported third-party plugins.
   enabled: true

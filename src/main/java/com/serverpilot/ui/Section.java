@@ -1,14 +1,13 @@
 package com.serverpilot.ui;
 
 import com.serverpilot.Permissions;
-import com.serverpilot.ui.menus.AdminToolsMenu;
-import com.serverpilot.ui.menus.DeveloperToolsMenu;
 import com.serverpilot.ui.menus.IntegrationsMenu;
 import com.serverpilot.ui.menus.PerformanceMenu;
 import com.serverpilot.ui.menus.PlayerListMenu;
 import com.serverpilot.ui.menus.PluginListMenu;
 import com.serverpilot.ui.menus.ServerMenu;
 import com.serverpilot.ui.menus.SettingsMenu;
+import com.serverpilot.ui.menus.ToolsMenu;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 
@@ -22,10 +21,8 @@ public enum Section {
             "Software, worlds, players and uptime", ServerMenu::new),
     PLAYERS("players", "Players", Material.PLAYER_HEAD, Permissions.SECTION_PLAYERS,
             "Browse and inspect online players", PlayerListMenu::new),
-    ADMIN_TOOLS("admin", "Admin Tools", Material.SHIELD, Permissions.SECTION_ADMIN_TOOLS,
-            "Operator utilities, starting with the debug wand", AdminToolsMenu::new),
-    DEVELOPER_TOOLS("dev", "Developer Tools", Material.COMMAND_BLOCK, Permissions.SECTION_DEVELOPER_TOOLS,
-            "Utilities for building and debugging a server", DeveloperToolsMenu::new),
+    TOOLS("tools", "Tools", Material.WOODEN_AXE, Permissions.SECTION_TOOLS,
+            "Admin and developer utilities", ToolsMenu::new),
     PLUGINS("plugins", "Plugins", Material.BOOKSHELF, Permissions.SECTION_PLUGINS,
             "Installed plugins and their details", PluginListMenu::new),
     INTEGRATIONS("integrations", "Integrations", Material.COMPARATOR, Permissions.SECTION_INTEGRATIONS,

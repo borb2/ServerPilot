@@ -6,6 +6,7 @@ import com.serverpilot.integration.IntegrationManager;
 import com.serverpilot.message.Messenger;
 import com.serverpilot.performance.PerformanceService;
 import com.serverpilot.tool.DebugWand;
+import com.serverpilot.tool.RankMannequins;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public record Services(
@@ -16,6 +17,7 @@ public record Services(
         UiSounds sounds,
         PerformanceService performance,
         IntegrationManager integrations,
-        DebugWand debugWand
+        DebugWand debugWand,
+        RankMannequins rankMannequins
 ) {
 }
