@@ -16,6 +16,8 @@ import io.papermc.paper.adventure.PaperAdventure;
 import io.papermc.paper.datacomponent.item.ResolvableProfile;
 import io.papermc.paper.event.player.PrePlayerAttackEntityEvent;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.ParsingException;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.luckperms.api.model.group.Group;
 import net.minecraft.network.protocol.Packet;
@@ -43,6 +45,11 @@ import java.util.UUID;
 public final class RankMannequins implements Listener {
 
     private static final double DISTANCE_IN_FRONT = 3.0;
+    private static final LegacyComponentSerializer LEGACY = LegacyComponentSerializer.builder()
+            .character('&')
+            .hexColors()
+            .useUnusualXRepeatedCharacterHexFormat()
+            .build();
 
     private final Keys keys;
     private final ServerPilotConfig config;
@@ -155,7 +162,7 @@ public final class RankMannequins implements Listener {
     }
 
     private Component nameTag(Group group, String dummyName) {
-        return legacy(prefix(group) + dummyName + suffix(group));
+        return format(prefix(group) + dummyName + suffix(group));
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -210,7 +217,7 @@ public final class RankMannequins implements Listener {
             return;
         }
 
-        viewer.sendMessage(legacy(prefix(group) + viewer.getName() + suffix(group) + "&r: test message"));
+        viewer.sendMessage(format(prefix(group) + viewer.getName() + suffix(group) + "&r: test message"));
     }
 
     private String prefix(Group group) {
@@ -223,7 +230,12 @@ public final class RankMannequins implements Listener {
         return suffix == null ? "" : suffix;
     }
 
-    private Component legacy(String raw) {
-        return LegacyComponentSerializer.legacyAmpersand().deserialize(raw.replace('§', '&'));
+    static Component format(String raw) {
+        String normalized = raw.replace('§', '&');
+        try {
+            return LEGACY.deserialize(LEGACY.serialize(MiniMessage.miniMessage().deserialize(normalized)));
+        } catch (ParsingException e) {
+            return LEGACY.deserialize(normalized);
+        }
     }
 }
