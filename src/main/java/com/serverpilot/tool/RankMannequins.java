@@ -5,12 +5,24 @@ import com.serverpilot.Permissions;
 import com.serverpilot.config.ServerPilotConfig;
 import com.serverpilot.integration.IntegrationManager;
 import com.serverpilot.integration.LuckPermsIntegration;
+import com.destroystokyo.paper.profile.ProfileProperty;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
+import com.mojang.authlib.properties.PropertyMap;
 import com.serverpilot.message.Messenger;
+import io.papermc.paper.adventure.PaperAdventure;
 import io.papermc.paper.datacomponent.item.ResolvableProfile;
 import io.papermc.paper.event.player.PrePlayerAttackEntityEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.luckperms.api.model.group.Group;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
+import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
+import net.minecraft.world.level.GameType;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Mannequin;
@@ -20,9 +32,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.util.Vector;
 
+import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.UUID;
 
 public final class RankMannequins implements Listener {
 
@@ -32,6 +48,7 @@ public final class RankMannequins implements Listener {
     private final ServerPilotConfig config;
     private final Messenger messenger;
     private final IntegrationManager integrations;
+    private final List<UUID> listed = new ArrayList<>();
 
     public RankMannequins(Keys keys, ServerPilotConfig config, Messenger messenger, IntegrationManager integrations) {
         this.keys = keys;
@@ -64,6 +81,9 @@ public final class RankMannequins implements Listener {
         ResolvableProfile profile = ResolvableProfile.resolvableProfile(player.getPlayerProfile());
         for (int i = 0; i < groups.size(); i++) {
             Group group = groups.get(i);
+            String dummyName = "TestDummy" + (i + 1);
+            Component nameTag = nameTag(group, dummyName);
+            list(player, dummyName, nameTag);
             Location spot = start.clone().add(right.clone().multiply(offsetFor(i, groups.size(), spacing)));
             spot.setYaw(eye.getYaw() + 180.0f);
             spot.setPitch(0.0f);
@@ -71,7 +91,7 @@ public final class RankMannequins implements Listener {
             player.getWorld().spawn(spot, Mannequin.class, mannequin -> {
                 mannequin.setProfile(profile);
                 mannequin.setImmovable(true);
-                mannequin.customName(nameTag(group, player.getName()));
+                mannequin.customName(nameTag);
                 mannequin.setCustomNameVisible(true);
                 mannequin.setPersistent(false);
                 mannequin.getPersistentDataContainer()
@@ -86,6 +106,7 @@ public final class RankMannequins implements Listener {
     }
 
     public int clear(Player player) {
+        unlistAll();
         int removed = 0;
         for (Entity entity : player.getWorld().getEntitiesByClass(Mannequin.class)) {
             if (isRankMannequin(entity)) {
@@ -96,12 +117,45 @@ public final class RankMannequins implements Listener {
         return removed;
     }
 
+    private void list(Player skinSource, String dummyName, Component displayName) {
+        UUID id = UUID.randomUUID();
+        Multimap<String, Property> properties = ArrayListMultimap.create();
+        for (ProfileProperty property : skinSource.getPlayerProfile().getProperties()) {
+            properties.put(property.getName(),
+                    new Property(property.getName(), property.getValue(), property.getSignature()));
+        }
+        GameProfile profile = new GameProfile(id, dummyName, new PropertyMap(properties));
+
+        listed.add(id);
+        broadcast(new ClientboundPlayerInfoUpdatePacket(
+                EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER,
+                        ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LISTED,
+                        ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME,
+                        ClientboundPlayerInfoUpdatePacket.Action.UPDATE_HAT),
+                new ClientboundPlayerInfoUpdatePacket.Entry(id, profile, true, 0, GameType.SURVIVAL,
+                        PaperAdventure.asVanilla(displayName), true, 0, null)));
+    }
+
+    public void unlistAll() {
+        if (listed.isEmpty()) {
+            return;
+        }
+        broadcast(new ClientboundPlayerInfoRemovePacket(List.copyOf(listed)));
+        listed.clear();
+    }
+
+    private void broadcast(Packet<?> packet) {
+        for (Player online : Bukkit.getOnlinePlayers()) {
+            ((CraftPlayer) online).getHandle().connection.send(packet);
+        }
+    }
+
     private boolean isRankMannequin(Entity entity) {
         return entity.getPersistentDataContainer().has(keys.rankMannequin, PersistentDataType.STRING);
     }
 
-    private Component nameTag(Group group, String playerName) {
-        return legacy(prefix(group) + playerName + suffix(group));
+    private Component nameTag(Group group, String dummyName) {
+        return legacy(prefix(group) + dummyName + suffix(group));
     }
 
     @EventHandler(ignoreCancelled = true)

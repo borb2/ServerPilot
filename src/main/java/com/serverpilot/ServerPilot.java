@@ -21,6 +21,7 @@ import java.util.List;
 public final class ServerPilot extends JavaPlugin {
     private ServerPilotConfig config;
     private IntegrationManager integrations;
+    private RankMannequins rankMannequins;
 
     @Override
     public void onEnable() {
@@ -33,7 +34,7 @@ public final class ServerPilot extends JavaPlugin {
         integrations = new IntegrationManager(this, config);
         DebugWand debugWand = new DebugWand(keys, config, messenger);
         integrations.enableAll();
-        RankMannequins rankMannequins = new RankMannequins(keys, config, messenger, integrations);
+        rankMannequins = new RankMannequins(keys, config, messenger, integrations);
         Services services = new Services(this, keys, config, messenger, sounds, performance, integrations,
                 debugWand, rankMannequins);
         getServer().getPluginManager().registerEvents(new MenuListener(), this);
@@ -58,6 +59,9 @@ public final class ServerPilot extends JavaPlugin {
             if (player.getOpenInventory().getTopInventory().getHolder() instanceof Menu) {
                 player.closeInventory();
             }
+        }
+        if (rankMannequins != null) {
+            rankMannequins.unlistAll();
         }
         if (integrations != null) {
             integrations.disableAll();

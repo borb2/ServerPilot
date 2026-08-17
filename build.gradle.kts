@@ -1,5 +1,6 @@
 plugins {
     java
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.21"
 }
 
 group = providers.gradleProperty("group").get()
@@ -20,7 +21,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:$paperApiVersion")
+    paperweight.paperDevBundle(paperApiVersion)
     compileOnly("net.luckperms:api:5.5")
     testImplementation("io.papermc.paper:paper-api:$paperApiVersion")
     testImplementation(platform("org.junit:junit-bom:5.11.4"))
